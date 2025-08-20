@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Hứng mèo emoji</title>
+<style>
+  body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+  canvas { display: block; background: #ffe6f0; } /* nền hồng nhạt */
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let gameStarted = false;
+let message = "";
+
+// Ảnh mèo
+const catHappy = new Image();
+catHappy.src = 'https://i.postimg.cc/B6TrWmms/e5c5fe17-0b11-4052-9504-00b5b3d8df3f.png';
+const catSad = new Image();
+catSad.src = 'https://i.postimg.cc/3w4hqCMJ/376c14f2-87cc-42bc-bec6-bb3891e6be1b.png';
+
+// Ảnh giỏ rổ
+const basketImg = new Image();
+basketImg.src = 'https://i.postimg.cc/1XjX6Rwv/istockphoto-1083652026-612x612.jpg';
+
+// Giỏ
+const basket = { x: canvas.width/2 - 50, y: canvas.height - 100, width: 100, height: 80 };
+const cats = [];
+let happyCount = 0;
+let sadCount = 0;
+
+// Tạo mèo rơi
+function spawnCat() {
+  const type = Math.random() < 0.5 ? 'happy' : 'sad';
+  cats.push({
+    x: Math.random() * (canvas.width - 50),
+    y: -50,
+    type: type,
+    speed: 2 + Math.random() * 3
+  });
+}
+
+// Vẽ giỏ
+function drawBasket() {
+  ctx.drawImage(basketImg, basket.x, basket.y, basket.width, basket.height);
+}
+
+// Vẽ mèo
+function drawCats() {
+  cats.forEach(cat => {
+    const img = cat.type === 'happy' ? catHappy : catSad;
+    ctx.drawImage(img, cat.x, cat.y, 50, 50);
+  });
+}
+
+// Cập nhật mèo
+function updateCats() {
+  for (let i = cats.length - 1; i >= 0; i--) {
+    const cat = cats[i];
+    cat.y += cat.speed;
+
+    // Kiểm tra hứng giỏ
+    if (cat.y + 50 >= basket.y && cat.x + 50 >= basket.x && cat.x <= basket.x + basket.width) {
+      if (cat.type === 'happy') happyCount++;
+      else sadCount++;
+      cats.splice(i, 1);
+    } else if (cat.y > canvas.height) {
+      cats.splice(i, 1);
+    }
+  }
+}
+
+// Kiểm tra thông điệp
+function checkMessage() {
+  if (happyCount >= 10) {
+    message = "Chúc đại ca 1 ngày tốt lành!";
+    happyCount = 0;
+    sadCount = 0;
+  } else if (sadCount >= 10) {
+    message = "Sao buồn vậy đại ca!";
+    happyCount = 0;
+    sadCount = 0;
+  }
+}
+
+// Vẽ tất cả
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  if (!gameStarted) {
+    // Màn hình bắt đầu
+    ctx.fillStyle = "#ff66b2";
+    ctx.font = "bold 40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Nhấn để bắt đầu", canvas.width/2, canvas.height/2 - 60);
+    
+    ctx.font = "24px Arial";
+    ctx.fillText("Các chú mèo đang rơi, tuy nhiên vì Hòa là một người nhẫn tâm", canvas.width/2, canvas.height/2);
+    ctx.fillText("nên bạn chỉ có thể cứu được 1 trong 2 mèo.", canvas.width/2, canvas.height/2 + 30);
+    ctx.fillText("Chú mèo bạn cứu sẽ đại diện cho cảm xúc của bạn ngày hôm nay.", canvas.width/2, canvas.height/2 + 60);
+    return;
+  }
+  
+  // Nền
+  ctx.fillStyle = "#ffe6f0";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  drawBasket();
+  drawCats();
+
+  // Hiển thị thông điệp
+  if (message) {
+    ctx.fillStyle = "purple";
+    ctx.font = "bold 50px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(message, canvas.width/2, 100);
+    setTimeout(() => { message = ""; }, 2000); // hiện 2 giây
+  }
+}
+
+// Điều khiển giỏ bằng chuột
+canvas.addEventListener('mousemove', (e) => {
+  if (gameStarted) basket.x = e.clientX - basket.width/2;
+});
+
+// Bắt đầu game khi click
+canvas.addEventListener('click', () => {
+  if (!gameStarted) {
+    gameStarted = true;
+  }
+});
+
+// Game loop
+function gameLoop() {
+  if (gameStarted) {
+    updateCats();
+    checkMessage();
+    spawnCatRandomly();
+  }
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+// Spawn mèo ngẫu nhiên khoảng 1 giây
+let lastSpawn = 0;
+function spawnCatRandomly() {
+  const now = Date.now();
+  if (now - lastSpawn > 1000) {
+    spawnCat();
+    lastSpawn = now;
+  }
+}
+
+gameLoop();
+</script>
+</body>
+</html>
