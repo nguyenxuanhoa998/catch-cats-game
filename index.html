@@ -80,11 +80,11 @@ function updateCats() {
 // Kiểm tra thông điệp
 function checkMessage() {
   if (happyCount >= 10) {
-    message = "Chúc đại ca 1 ngày tốt lành!";
+    message = "Chúc đại ca 1 ngày tốt lành nha!";
     happyCount = 0;
     sadCount = 0;
   } else if (sadCount >= 10) {
-    message = "Sao buồn vậy đại ca!";
+    message = "Nay đại ca buồn à khoong sao đâu chuyện gì cũng sẽ qua thôi cố lên đại ca!";
     happyCount = 0;
     sadCount = 0;
   }
@@ -103,8 +103,8 @@ function draw() {
     
     ctx.font = "24px Arial";
     ctx.fillText("Các chú mèo đang rơi, tuy nhiên vì Hòa là một người nhẫn tâm", canvas.width/2, canvas.height/2);
-    ctx.fillText("nên bạn chỉ có thể cứu được 1 trong 2 mèo.", canvas.width/2, canvas.height/2 + 30);
-    ctx.fillText("Chú mèo bạn cứu sẽ đại diện cho cảm xúc của bạn ngày hôm nay.", canvas.width/2, canvas.height/2 + 60);
+    ctx.fillText("nên Đại ca chỉ có thể cứu được 1 trong 2 chú mèo.", canvas.width/2, canvas.height/2 + 30);
+    ctx.fillText("Chú mèo Đại ca cứu sẽ đại diện cho cảm xúc của Đại ca ngày hôm nay.", canvas.width/2, canvas.height/2 + 60);
     return;
   }
   
